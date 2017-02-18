@@ -29,9 +29,6 @@ void mergeIntoFile (MyDB_TableReaderWriter &tblwrite, vector <MyDB_RecordIterato
         pq.push(it);
     }
 
-
-
-    
     while(!pq.empty()){
         MyDB_RecordPtr currentRecord;
         MyDB_RecordIteratorAltPtr cur = pq.top();

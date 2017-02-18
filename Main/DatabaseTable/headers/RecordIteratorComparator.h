@@ -22,6 +22,8 @@ RecordIteratorComparator(function <bool ()> comp, MyDB_RecordIteratorAltPtr it1,
     comparator = comp;
 }
 
+    
+
     bool operator () (void *lhsPtr, void *rhsPtr) {
         iterator1->getCurrent(lhs);
         iterator2->getCurrent(rhs);
