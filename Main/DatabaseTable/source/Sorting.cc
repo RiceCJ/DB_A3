@@ -24,7 +24,12 @@ void mergeIntoFile (MyDB_TableReaderWriter &tblwrite, vector <MyDB_RecordIterato
 					function <bool ()> comp, MyDB_RecordPtr rec1, MyDB_RecordPtr rec2) {
 
     // using priority queue
-	std::priority_queue<MyDB_RecordIteratorAltPtr,vector<MyDB_RecordIteratorAltPtr>,RecordIteratorComparator> pq;
+
+    RecordIteratorComparator mycomp(comp, rec1, rec2);
+
+	std::priority_queue<MyDB_RecordIteratorAltPtr,
+            vector<MyDB_RecordIteratorAltPtr>,
+            RecordIteratorComparator> pq(mycomp);
     for(MyDB_RecordIteratorAltPtr it:itervec){
         pq.push(it);
     }

@@ -13,29 +13,24 @@ class RecordIteratorComparator {
 
 public:
 
-RecordIteratorComparator(function <bool ()> comp, MyDB_RecordIteratorAltPtr it1,  MyDB_RecordIteratorAltPtr it2,
-                         MyDB_RecordPtr lhs, MyDB_RecordPtr rhs){
-    iterator1 = it1;
-    iterator2 = it2;
-    iterator1->getCurrent(lhs);
-    iterator2->getCurrent(rhs);
+RecordIteratorComparator(function <bool ()> comp, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs){
+
     comparator = comp;
+    this->lhs = lhs;
+    this->rhs = rhs;
+
 }
 
     
 
-    bool operator () (void *lhsPtr, void *rhsPtr) {
-        iterator1->getCurrent(lhs);
-        iterator2->getCurrent(rhs);
-        lhs->fromBinary (lhsPtr);
-        rhs->fromBinary (rhsPtr);
+    bool operator () (MyDB_RecordIteratorAltPtr iter1, MyDB_RecordIteratorAltPtr iter2) {
+        iter1->getCurrent(lhs);
+        iter2->getCurrent(rhs);
         return comparator ();
     }
 
 private:
     function <bool ()> comparator;
-    MyDB_RecordIteratorAltPtr iterator1;
-    MyDB_RecordIteratorAltPtr iterator2;
     MyDB_RecordPtr lhs;
     MyDB_RecordPtr rhs;
 };
