@@ -39,9 +39,82 @@ vector <MyDB_PageReaderWriter> mergeIntoList (MyDB_BufferManagerPtr mngr,
 											  function <bool ()> comp,
 											  MyDB_RecordPtr rec1,
 											  MyDB_RecordPtr rec2) {
-	vector <MyDB_PageReaderWriter> mergedvec;
 
+    vector <MyDB_PageReaderWriter> mergedvec;
 
+    MyDB_PageReaderWriter curpage = MyDB_PageReaderWriter(*mngr.get());
+
+    bool has1 = false;
+    bool has2 = false;
+    if(iter1->advance()){
+        has1 = true;
+        iter1->getCurrent(rec1);
+    }
+    if(iter2->advance()){
+        has2 = true;
+        iter2->getCurrent(rec2);
+    }
+    while(has1 || has2){
+        if(has1 && has2){
+            // comp() is true if rec1 < rec2
+            if(comp()){
+                // append rec1
+                if(!curpage.append(rec1)){
+                    mergedvec.push_back(curpage);
+                    curpage = MyDB_PageReaderWriter(*mngr.get());
+                    curpage.append(rec1);
+                }
+                if(iter1->advance()){
+                    iter1->getCurrent(rec1);
+                }
+                else{
+                    has1 = false;
+                }
+            }
+            else{
+                if(!curpage.append(rec2)){
+                    mergedvec.push_back(curpage);
+                    curpage = MyDB_PageReaderWriter(*mngr.get());
+                    curpage.append(rec2);
+                }
+                if(iter2->advance()){
+                    iter2->getCurrent(rec2);
+                }
+                else{
+                    has2 = false;
+                }
+            }
+        }
+        else if(has1){
+            // append rec1
+            if(!curpage.append(rec1)){
+                mergedvec.push_back(curpage);
+                curpage = MyDB_PageReaderWriter(*mngr.get());
+                curpage.append(rec1);
+            }
+            if(iter1->advance()){
+                iter1->getCurrent(rec1);
+            }
+            else{
+                has1 = false;
+            }
+        }
+        else{
+            if(!curpage.append(rec2)){
+                mergedvec.push_back(curpage);
+                curpage = MyDB_PageReaderWriter(*mngr.get());
+                curpage.append(rec2);
+            }
+            if(iter2->advance()){
+                iter2->getCurrent(rec2);
+            }
+            else{
+                has2 = false;
+            }
+        }
+    }
+
+    mergedvec.push_back(curpage);
 
 	return mergedvec;
 
@@ -96,7 +169,7 @@ void sort (int r, MyDB_TableReaderWriter &tblread, MyDB_TableReaderWriter &tblwr
 
 
         // push iterator to itervec
-        itervec.push_back(sortedvec[0].getIteratorAlt());
+//        itervec.push_back(sortedvec[0].getIteratorAlt());
 
     }
 
