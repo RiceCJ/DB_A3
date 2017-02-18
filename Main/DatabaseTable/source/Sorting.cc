@@ -2,10 +2,12 @@
 #ifndef SORT_C
 #define SORT_C
 
+#include "RecordComparator.h"
 #include "MyDB_PageReaderWriter.h"
 #include "MyDB_TableRecIterator.h"
 #include "MyDB_TableRecIteratorAlt.h"
 #include "MyDB_TableReaderWriter.h"
+#include "RecordIteratorComparator.h"
 #include "Sorting.h"
 
 using namespace std;
@@ -21,7 +23,20 @@ void mergeIntoFile (MyDB_TableReaderWriter &tblwrite, vector <MyDB_RecordIterato
 					function <bool ()> comp, MyDB_RecordPtr rec1, MyDB_RecordPtr rec2) {
 
     // using priority queue
+	RecordComparator myComparator(comp, rec1, rec2);
+	std::priority_queue<MyDB_RecordIteratorAltPtr,std::vector<MyDB_RecordIteratorAltPtr>,RecordIteratorComparator> pq;
+    for(MyDB_RecordIteratorAltPtr it:itervec){
+        pq.push(it);
+    }
 
+    while(!pq.empty()){
+        MyDB_RecordPtr currentRecord;
+        MyDB_RecordIteratorAltPtr cur = pq.top();
+        cur->getCurrent(currentRecord);
+        pq.pop();
+        tblwrite.append(currentRecord);
+        cur->advance();
+    }
 
 }
 
@@ -120,6 +135,8 @@ vector <MyDB_PageReaderWriter> mergeIntoList (MyDB_BufferManagerPtr mngr,
 
 }
 
+
+
 /**
  * TPMMS algorithm
  * r: run size
@@ -183,9 +200,8 @@ void sort (int r, MyDB_TableReaderWriter &tblread, MyDB_TableReaderWriter &tblwr
 
     }
 
-
     // merge phase
-
+    mergeIntoFile(tblwrite,itervec,comp,rec1,rec2);
 
 }
 
