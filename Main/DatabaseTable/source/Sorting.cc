@@ -145,27 +145,37 @@ void sort (int r, MyDB_TableReaderWriter &tblread, MyDB_TableReaderWriter &tblwr
 
         // load r pages per run
 
-        vector <MyDB_PageReaderWriter> pagevec;
-        vector <MyDB_PageReaderWriter> sortedvec;
+
+        vector<vector <MyDB_PageReaderWriter>> sortedvec;
         int numr = 0;
 
         while(i + numr < pagenum && numr < r){
-            pagevec.push_back(tblread[i+numr]);
+            vector <MyDB_PageReaderWriter> pagevec;
+            pagevec.push_back(*tblread[i+numr].sort(comp, rec1, rec2).get());
+            sortedvec.push_back(pagevec);
             numr++;
         }
+        while(sortedvec.size() > 1){
 
-        // sort each page
-        vector <MyDB_PageReaderWriter>::iterator pageiter;
-        for(pageiter = pagevec.begin(); pageiter != pagevec.end(); pageiter++){
-            /**
-             * rec1 & rec2 need to be rebuild?
-             * * get?
-             */
-            sortedvec.push_back(*pageiter->sort(comp, rec1, rec2).get());
+            vector <vector <MyDB_PageReaderWriter>> tempvec;
+
+            long total = sortedvec.size();
+            long left = 0, right = 1;
+            while(left < total && right < total){
+                tempvec.push_back(mergeIntoList(tblread.getBufferMgr(),
+                                                ::getIteratorAlt(sortedvec[left]),
+                                                ::getIteratorAlt(sortedvec[right]),
+                                                comp, rec1, rec2));
+            }
+            if(left < total){
+                tempvec.push_back(sortedvec[left]);
+            }
+
+            sortedvec = tempvec;
         }
 
         // call mergeIntoList
-        
+
 
 
         // push iterator to itervec
