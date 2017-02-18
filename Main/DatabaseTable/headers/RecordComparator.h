@@ -20,7 +20,7 @@ public:
 	bool operator () (void *lhsPtr, void *rhsPtr) {
 		lhs->fromBinary (lhsPtr);
 		rhs->fromBinary (rhsPtr);
-		return comparator ();	
+		return comparator ();
 	}
 
 private:

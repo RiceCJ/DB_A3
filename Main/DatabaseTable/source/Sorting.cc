@@ -31,11 +31,13 @@ void mergeIntoFile (MyDB_TableReaderWriter &tblwrite, vector <MyDB_RecordIterato
             vector<MyDB_RecordIteratorAltPtr>,
             RecordIteratorComparator> pq(mycomp);
     for(MyDB_RecordIteratorAltPtr it:itervec){
-        pq.push(it);
+        if(it->advance()) {
+            pq.push(it);
+        }
     }
 
     while(!pq.empty()){
-        MyDB_RecordPtr currentRecord;
+        MyDB_RecordPtr currentRecord = tblwrite.getEmptyRecord();
         MyDB_RecordIteratorAltPtr cur = pq.top();
         cur->getCurrent(currentRecord);
         pq.pop();
@@ -186,7 +188,7 @@ void sort (int r, MyDB_TableReaderWriter &tblread, MyDB_TableReaderWriter &tblwr
             long total = sortedvec.size();
             long left = 0, right = 1;
             while(left < total && right < total){
-                tempvec.push_back(mergeIntoList(tblread.getBufferMgr(),
+                tempvec.push_back(mergeIntoList(readmngrptr,
                                                 ::getIteratorAlt(sortedvec[left]),
                                                 ::getIteratorAlt(sortedvec[right]),
                                                 comp, rec1, rec2));
