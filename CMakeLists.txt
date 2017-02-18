@@ -47,7 +47,8 @@ set(SOURCE_FILES
         Main/Record/source/MyDB_AttVal.cc
         Main/Record/source/MyDB_Record.cc
 #        Main/RecordTest/source/RecordQUnit.cc
-        Main/SortTest/source/SortQUnit.cc Main/DatabaseTable/headers/RecordIteratorComparator.h)
+        Main/SortTest/source/SortQUnit.cc
+        Main/DatabaseTable/headers/RecordIteratorComparator.h)
 
 include_directories(
         Main/BufferMgr/headers

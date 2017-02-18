@@ -2,6 +2,7 @@
 #ifndef SORT_C
 #define SORT_C
 
+#include <RecordIteratorComparator.h>
 #include "RecordComparator.h"
 #include "MyDB_PageReaderWriter.h"
 #include "MyDB_TableRecIterator.h"
@@ -23,8 +24,7 @@ void mergeIntoFile (MyDB_TableReaderWriter &tblwrite, vector <MyDB_RecordIterato
 					function <bool ()> comp, MyDB_RecordPtr rec1, MyDB_RecordPtr rec2) {
 
     // using priority queue
-	RecordComparator myComparator(comp, rec1, rec2);
-	std::priority_queue<MyDB_RecordIteratorAltPtr,std::vector<MyDB_RecordIteratorAltPtr>,RecordIteratorComparator> pq;
+	std::priority_queue<MyDB_RecordIteratorAltPtr,vector<MyDB_RecordIteratorAltPtr>,RecordIteratorComparator> pq;
     for(MyDB_RecordIteratorAltPtr it:itervec){
         pq.push(it);
     }
@@ -35,7 +35,9 @@ void mergeIntoFile (MyDB_TableReaderWriter &tblwrite, vector <MyDB_RecordIterato
         cur->getCurrent(currentRecord);
         pq.pop();
         tblwrite.append(currentRecord);
-        cur->advance();
+        if(cur->advance()){
+            pq.push(cur);
+        }
     }
 
 }
@@ -193,12 +195,8 @@ void sort (int r, MyDB_TableReaderWriter &tblread, MyDB_TableReaderWriter &tblwr
             sortedvec = tempvec;
         }
 
-        // call mergeIntoList
-
-
-
         // push iterator to itervec
-//        itervec.push_back(sortedvec[0].getIteratorAlt());
+        itervec.push_back(::getIteratorAlt(sortedvec[0]));
 
     }
 
