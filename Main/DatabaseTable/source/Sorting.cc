@@ -166,6 +166,8 @@ void sort (int r, MyDB_TableReaderWriter &tblread, MyDB_TableReaderWriter &tblwr
                                                 ::getIteratorAlt(sortedvec[left]),
                                                 ::getIteratorAlt(sortedvec[right]),
                                                 comp, rec1, rec2));
+                left += 2;
+                right += 2;
             }
             if(left < total){
                 tempvec.push_back(sortedvec[left]);
